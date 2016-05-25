@@ -1,0 +1,121 @@
+<style>
+  .yuding-youtu {margin-bottom:0!important;}
+.yuding-youtu .goods-list {width: 790px; position: relative; overflow: hidden; font-family: 'Microsoft Yahei'; z-index: 1;}
+.yuding-youtu .goods-list ul {position: relative; margin-right: -15px; overflow: hidden; *padding-bottom: 10px;}
+.yuding-youtu .goods-list li {float: left; width: 170px; height:291px; overflow: hidden; padding: 9px; border: 1px solid #cacaca; background: #fff; position: relative; margin: 0 10px 10px 0;}
+.yuding-youtu .goods-list li .goods-img {width: 160px; height: 160px; padding: 4px 5px; position: relative; margin-bottom: 18px;}
+.yuding-youtu .goods-list li .goods-img .goods-ico {position: absolute; left: 0; top: 0;}
+.yuding-youtu .goods-ico span {display: block; width: 33px; line-height: 1.1; padding: 3px 0; text-align: center;}
+.yuding-youtu .goods-ico .goods-ico-top {background: #c91623; color: #fff;}
+.yuding-youtu .goods-ico .goods-ico-bottom {border: 1px dotted #c91623; color: #c91623; width: 31px; background: #fff;}
+.yuding-youtu .goods-list li .goods-detail {color: #333333;}
+.yuding-youtu .goods-list li .goods-name {height: 27px; overflow: hidden; line-height: 1.1; margin-bottom: 10px;}
+.yuding-youtu .goods-list li .goods-name a {color: #333333;}
+.yuding-youtu .goods-list li .goods-name a:hover {color: #c91623; text-decoration: underline;}
+.yuding-youtu .goods-list li .goods-info {line-height: 1.1; margin-bottom: 14px; position: relative;}
+.yuding-youtu .goods-list li .goods-price .mk-price,.goods-list li .goods-price .jd-price {display: block;}
+.yuding-youtu .goods-list li .goods-price .mk-price {color: #333; text-decoration: line-through; margin-bottom: 6px;}
+.yuding-youtu .goods-list li .goods-price .jd-price {color: #c91623; font-size: 14px; font-weight: bold;}
+.yuding-youtu .goods-list li .yd-num {bottom: 0; right: 0; position: absolute;}
+.yuding-youtu .goods-list li .yd-num em {color: #c91623;}
+.yuding-youtu .goods-list li .goods-bar {overflow: hidden;}
+.yuding-youtu .goods-list li .dingjin {float: left; width: 103px; border: 1px dotted #c91623; color: #c91623; border-right: 0; text-align: center; height: 35px; line-height: 35px;}
+.yuding-youtu .goods-list li .buy-now {float: left; width: 66px; height: 37px;}
+.yuding-youtu .goods-list li .buy-now a {display: block; width: 66px; height: 37px; font-weight: bold; background: #c91623; text-align: center; color: #fff; line-height: 37px;}
+.yuding-youtu .goods-list li .buy-now a em {display: inline-block; width: 4px; height: 6px; background: url(//img12.360buyimg.com/cms/jfs/t2386/191/2869922951/354/b304cdf3/571f1dbcNcad91e5f.png) no-repeat 0 -28px; vertical-align: 1px; margin-left: 2px;}
+.yuding-youtu .goods-list li .buy-now a:hover {background: #e01928; text-decoration: none;}
+</style>
+<div class="j-module mod yuding-youtu" module-function="log618Sku" module-param="{}">
+  <div class="goods-list">
+    <ul>
+    #foreach($!goods in $!goodsRecList)
+      <li skuid="$!goods.goodsId" class="item-$velocityCount" $!jshopCommon.clstag($velocityCount)>
+        <div class="goods-img">
+          <a href="$!jshopProduct.getBuyUrl($!goods.goodsId)" target="_blank">
+            <img src="$!jshopCommon.getImage($!goods.imageurl,7)" alt="$!goods.wname" width="160">
+            <span class="goods-ico">
+              <span class="goods-ico-top">玩转<br>配饰</span>
+                <span class="goods-ico-bottom">6月<br>开抢</span>
+            </span>
+          </a>
+        </div>
+        <div class="goods-detail">
+          <div class="goods-name">
+            <a href="$!jshopProduct.getBuyUrl($!goods.goodsId)" target="_blank">$!goods.wname</a>
+          </div>
+          <div class="goods-info">
+            <div class="goods-price">
+              <span class="jd-price">￥<em>0</em></span>
+            </div>
+            <div class="yd-num">
+              <em>0</em>人已预定
+            </div>
+          </div>
+          <div class="goods-bar">
+            <div class="dingjin">定金<span class="expAmount">0</span>抵<span class="depositWorth">0</span>元</div>
+            <div class="buy-now"><a href="$!jshopProduct.getBuyUrl($!goods.goodsId)" target="_blank">立即预定<em></em></a></div>
+          </div>
+        </div>
+      </li>
+    #end
+    </ul>
+  </div>
+</div>
+
+<script>
+function yushou(dom){
+  var _this = this;
+  _this.dom = jQuery(dom);
+  _this.li = null;
+  _this.init();
+}
+yushou.prototype.init = function(){
+  var _this = this;
+  _this.dom.each(function(){
+    var that = $(this);
+    _this.li = jQuery(this).find('li');
+    if (!that.data('init')) {
+      _this.getInfo();
+      that.data('init','over');
+    };
+  })
+}
+yushou.prototype.getInfo = function(){
+  var _this = this;
+  _this.li.each(function(index){
+    var that = jQuery(this);
+    var skuid = that.attr('skuid');
+    var ydNum = null;
+    var expAmount = null;
+    var url = null;
+    var depositWorth = null;
+    var oriPrice = null;
+    jQuery.ajax({
+      type:'post',
+      dataType : 'jsonp',
+      url:'//yuding.jd.com/presaleInfo/getPresaleInfo.action?sku='+skuid,
+      success:function(data){
+        if(data.ret){
+        ydNum = data.ret.count;
+        url = data.ret.url;
+        expAmount = (data.ret.earnest+'').replace(/(\.00)/g,'');
+        depositWorth = (data.ret.depositWorth+'').replace(/(\.00)/g,'');
+        oriPrice = data.ret.oriPrice;
+        that.find('.buy-now a').attr('href',url);
+        that.find('.yd-num em').html(ydNum);
+        that.find('.jd-price em').html(oriPrice);
+        that.find('.depositWorth').html(depositWorth);
+        that.find('.expAmount').html(expAmount);
+       }else{
+         that.find('.jd-price').html('暂无信息');
+         that.find('.dingjin').html('暂无信息');
+        }
+      }
+    })
+  })
+}
+
+$(function(){
+  var ys1 = new yushou('.yuding-youtu');
+})
+</script>
